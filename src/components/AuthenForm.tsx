@@ -1,7 +1,8 @@
 import React,{useState, useRef,useEffect} from 'react';
-import { validateName } from '../utils/validationUtil';
+import { validateFullRegNo, validateName, validatePhoneNumber } from '../utils/validationUtil';
 
 import './AuthenForm.css';
+import { TermsModal } from './TermsModal';
 
 interface ErrorState {
     name?:string,
@@ -12,23 +13,26 @@ interface ErrorState {
 export const AuthenForm:React.FC = () => {
     const nameRef = useRef<HTMLInputElement>(null);
     const phoneNumberRef = useRef<HTMLInputElement>(null);
+    const juminNumber1Ref = useRef<HTMLInputElement>(null);
+    const juminNumber2Ref = useRef<HTMLInputElement>(null);
 
-    const [name, setName] = useState<string>('');
+    const [name, setName] = useState<string>();
     const [phoneNumber, setPhoneNumber] = useState<number>();
-    const [juminNumber1, setJuminNumber1] = useState<number>();
-    const [juminNumber2, setJuminNumber2] = useState<number>();
+    const [juminNumber, setJuminNumber] = useState<number>();
 
     const [errorState, setErrorState] = useState<ErrorState>({});
+    const [isValidated, setIsValidated] = useState<boolean>(false);
 
     const onChangeInputName = (e:React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = nameRef.current?.value;
 
         if (!validateName(inputValue || '')) {
+            setName('');
             setErrorState(prevState=>{return({...prevState, name:'올바른 이름을 입력해주세요'})});
         } else {
+            setName(inputValue?.trim());
             setErrorState(prevState=>{return({...prevState, name:''})})
         }
-
     }
 
     const onKeyDownInputName = (e:React.KeyboardEvent<HTMLInputElement>) => {
@@ -38,8 +42,54 @@ export const AuthenForm:React.FC = () => {
         }
     }
 
+    const onChangeInputPhoneNumber = (e:React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = phoneNumberRef.current?.value;
+
+        if (!validatePhoneNumber(inputValue || '')) {
+            setPhoneNumber(undefined);
+            setErrorState(prevState=>{return({...prevState, phoneNumber:'올바른 전화번호를 입력해주세요'})});
+        } else {
+            setPhoneNumber(Number(inputValue));
+            setErrorState(prevState=>{return({...prevState, phoneNumber:''})})
+        }
+    }
+
+    const onKeyDownInputPhoneNumber = (e:React.KeyboardEvent<HTMLInputElement>) => {
+        const { keyCode } = e;
+        if ( keyCode === 13 ) {
+            juminNumber1Ref.current?.focus();
+        }
+    }
+
+    const onChangeInputJuminNumber = (e:React.ChangeEvent<HTMLInputElement>) => {
+        const inputValueJumin1 = juminNumber1Ref.current?.value;
+        const inputValueJumin2 = juminNumber2Ref.current?.value;
+
+        const jumin = (inputValueJumin1||'') + (inputValueJumin2||'');
+
+        if (!validateFullRegNo(jumin || '')) {
+            setJuminNumber(undefined);
+            setErrorState(prevState=>{return({...prevState, juminNumber:'올바른 주민등록번호를 입력해주세요'})});
+        } else {
+            setJuminNumber(Number(jumin));
+            setErrorState(prevState=>{return({...prevState, juminNumber:''})})
+        }
+    }
+
+    const onKeyDownInputJuminNumber1 = (e:React.KeyboardEvent<HTMLInputElement>) => {
+        const { keyCode } = e;
+        if ( keyCode === 13 ) {
+            juminNumber2Ref.current?.focus();
+        }
+    }
+
     const onSubmitHandler = (e:React.FormEvent) => {
         e.preventDefault();
+
+    }
+
+    const setValidateCompleted = () => {
+        setIsValidated(true)
     }
 
     useEffect(()=>{
@@ -47,6 +97,12 @@ export const AuthenForm:React.FC = () => {
             nameRef.current.focus();
         }
     },[]);
+
+    useEffect(()=>{
+        if (name && phoneNumber && juminNumber) {
+            setValidateCompleted();
+        }
+    },[name, phoneNumber, juminNumber])
 
     return (
         <div>
@@ -83,22 +139,44 @@ export const AuthenForm:React.FC = () => {
 
                 <div className='form-item'>
                     <p>휴대폰 번호</p>
-                    <input type='text' name='phoneNumber' className='input-bottom-underline'
+                    <input type='text' name='phoneNumber' className={`input-bottom-underline ${errorState.phoneNumber && 'error'}`}
                         ref={phoneNumberRef}
+                        onChange={onChangeInputPhoneNumber}
+                        onKeyDown={onKeyDownInputPhoneNumber}
                     />
+                    {
+                        errorState.phoneNumber && (
+                            <span className='form-error'>{errorState.phoneNumber}</span>
+                        )
+                    }
                 </div>
 
                 <div className='form-item'>
                     <p>주민등록번호</p>
                     <div style={{display:'flex'}}>
-                        <input type='text' name='jumin1' className='input-bottom-underline input-half'/> 
+                        <input type='text' name='jumin1' className={`input-bottom-underline input-half ${errorState.juminNumber && 'error'}`}
+                            ref={juminNumber1Ref}
+                            onChange={onChangeInputJuminNumber}
+                            onKeyDown={onKeyDownInputJuminNumber1}
+                        /> 
                         <span style={{margin:'0px 15px'}}> - </span> 
-                        <input type='text' name='jumin2' className='input-bottom-underline input-half'/>
+                        <input type='password' name='jumin2' className={`input-bottom-underline input-half ${errorState.juminNumber && 'error'}`}
+                            ref={juminNumber2Ref}
+                            onChange={onChangeInputJuminNumber}
+                        />
                     </div>
+                    {
+                        errorState.juminNumber && (
+                            <span className='form-error'>{errorState.juminNumber}</span>
+                        )
+                    }
                 </div>
 
-                <button type='submit' className='button-submit'>다음</button>
+                <button type='submit' className={`button-submit ${isValidated && 'button-active'}`}
+                    disabled={!isValidated}
+                >다음</button>
             </form>
+            <TermsModal/>
         </div>
     )
 }

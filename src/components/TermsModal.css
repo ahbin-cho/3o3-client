@@ -1,0 +1,41 @@
+.modal-wrapper {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-inner {
+    padding: 24px;
+
+    position: absolute;
+    height: 330px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+
+    background: #FFFFFF;
+    border-radius: 24px 24px 0px 0px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    font-size: 16px;
+}
+
+.agree-all {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.button-agree {
+    width: -webkit-fill-available;
+    height: 54px;
+    color: white;
+    background: #DDE1E6;
+    border: none;
+    border-radius: 8px;
+}

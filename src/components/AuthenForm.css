@@ -61,3 +61,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.button-submit.button-active {
+    background: #4394F0;
+}
