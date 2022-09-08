@@ -24,3 +24,12 @@
 .detail-info {
     background: #F8F8F8;
 }
+
+.completed-form-title {
+    font-weight: 600;
+}
+
+.completed-form-item {
+    display: flex;
+    justify-content: space-between;
+}

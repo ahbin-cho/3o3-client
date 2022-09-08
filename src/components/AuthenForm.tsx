@@ -1,5 +1,6 @@
 import moment from 'moment';
 import React,{useState, useRef,useEffect} from 'react';
+import { EasySignRequest } from '../utils/request.module';
 import { validateFullRegNo, validateName, validatePhoneNumber } from '../utils/validationUtil';
 
 import './AuthenForm.css';
@@ -13,13 +14,7 @@ interface ErrorState {
     juminNumber?:string,
 }
 
-interface EasySignRequest {
-    ok: boolean,
-    data: {
-        expiredAt:string,
-        startedAt:string,
-    }
-}
+
 export const AuthenForm:React.FC = () => {
     const nameRef = useRef<HTMLInputElement>(null);
     const phoneNumberRef = useRef<HTMLInputElement>(null);
