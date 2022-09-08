@@ -1,0 +1,35 @@
+.timer {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 20px
+}
+
+.hr-line {
+    height: 12px;
+    background: #F2F4F8;
+}
+
+.timer-info-item {
+    margin: 34px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.timer-info-img {
+    margin: 0 36px;
+    flex: 30;
+    text-align: center;
+}
+
+.timer-info-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 8px 0;
+}
+.timer-info {
+    flex: 50;
+}
+.timer-info-description{
+    color: #878D96;
+}

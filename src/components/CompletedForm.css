@@ -1,0 +1,26 @@
+.completed-form-upper {
+    margin: 30px 0;
+}
+
+.completed-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 16px 0;
+}
+
+.completed-container { 
+    line-height: 40px;
+    margin: 15px 0px;
+    
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 16px;
+}
+
+.basic-info, .cash-info {
+    background: #F0F4FA;
+}
+
+.detail-info {
+    background: #F8F8F8;
+}

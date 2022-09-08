@@ -1,10 +1,15 @@
 .modal-wrapper {
+    margin: auto;
+    min-width: 375px;
+    max-width: 640px;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     background-color: rgba(0, 0, 0, 0.5);
+
+    /* transition: all .4s ease; */
 }
 
 .modal-inner {
@@ -38,4 +43,8 @@
     background: #DDE1E6;
     border: none;
     border-radius: 8px;
+}
+
+.button-active {
+    background: #4394F0;
 }

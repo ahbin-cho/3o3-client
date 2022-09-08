@@ -1,8 +1,11 @@
+import moment from 'moment';
 import React,{useState, useRef,useEffect} from 'react';
 import { validateFullRegNo, validateName, validatePhoneNumber } from '../utils/validationUtil';
 
 import './AuthenForm.css';
+import { CompletedForm } from './CompletedForm';
 import { TermsModal } from './TermsModal';
+import { Timer } from './TImer';
 
 interface ErrorState {
     name?:string,
@@ -10,6 +13,13 @@ interface ErrorState {
     juminNumber?:string,
 }
 
+interface EasySignRequest {
+    ok: boolean,
+    data: {
+        expiredAt:string,
+        startedAt:string,
+    }
+}
 export const AuthenForm:React.FC = () => {
     const nameRef = useRef<HTMLInputElement>(null);
     const phoneNumberRef = useRef<HTMLInputElement>(null);
@@ -22,6 +32,10 @@ export const AuthenForm:React.FC = () => {
 
     const [errorState, setErrorState] = useState<ErrorState>({});
     const [isValidated, setIsValidated] = useState<boolean>(false);
+    const [isTermsModalVisible, setIsTermsModalVisible] = useState<boolean>(false);
+
+    const [minutes, setMinutes] = useState<number>(1);
+    const [seconds, setSeconds] = useState<number>(0);
 
     const onChangeInputName = (e:React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = nameRef.current?.value;
@@ -83,13 +97,29 @@ export const AuthenForm:React.FC = () => {
         }
     }
 
-    const onSubmitHandler = (e:React.FormEvent) => {
-        e.preventDefault();
+    const onSubmitHandler = async () => {
+        console.log(name, phoneNumber, juminNumber)
 
+        try {
+            const response = await fetch('http://localhost:3001/api/v1/easysign/request',
+            {
+                method:'POST'
+            });
+            const document:EasySignRequest = await response.json();
+            const {data} = document;
+            const {startedAt, expiredAt} = data;
+            
+            const subTime = moment.duration(moment(expiredAt).diff(startedAt));
+
+            setMinutes(subTime.minutes());
+            setSeconds(subTime.seconds());
+        } catch (e:any) {
+            console.error(e.message);
+        }
     }
 
-    const setValidateCompleted = () => {
-        setIsValidated(true)
+    const onClickBtnNext = () => {
+        setIsTermsModalVisible(true);
     }
 
     useEffect(()=>{
@@ -100,13 +130,15 @@ export const AuthenForm:React.FC = () => {
 
     useEffect(()=>{
         if (name && phoneNumber && juminNumber) {
-            setValidateCompleted();
+            setIsValidated(true)
+        } else {
+            setIsValidated(false)
         }
     },[name, phoneNumber, juminNumber])
 
     return (
         <div>
-            <div className='form-title'>
+            {/* <div className='form-title'>
                 정확한 환급액 조회를 위해 <br/>
                 아래 정보가 필요해요!
             </div>
@@ -118,7 +150,7 @@ export const AuthenForm:React.FC = () => {
                 <img alt='authen-icon' src='./authen-icon.png'/>
             </div>
 
-            <form onSubmit={onSubmitHandler}>
+            <div>
                 <div className='form-item'>
                     <p>이름</p>
                     <input type='text' name='name' className={`input-bottom-underline ${errorState.name && 'error'}`}
@@ -172,11 +204,24 @@ export const AuthenForm:React.FC = () => {
                     }
                 </div>
 
-                <button type='submit' className={`button-submit ${isValidated && 'button-active'}`}
+                <button className={`button-submit ${isValidated && 'button-active'}`}
                     disabled={!isValidated}
+                    onClick={onClickBtnNext}
                 >다음</button>
-            </form>
-            <TermsModal/>
+            </div> */}
+
+            {
+                isTermsModalVisible && (
+                    <TermsModal onSubmit={onSubmitHandler} onClose={()=>setIsTermsModalVisible(false)}/>
+                )
+            }
+            {/* {
+                <Timer mm={minutes} ss={seconds}/>
+            } */}
+
+            {
+                <CompletedForm/>
+            }
         </div>
     )
 }
