@@ -1,5 +1,6 @@
 import moment from 'moment';
 import React,{useState, useRef,useEffect} from 'react';
+import {useNavigate, useLocation} from 'react-router-dom';
 import { EasySignRequest } from '../utils/request.module';
 import { validateFullRegNo, validateName, validatePhoneNumber } from '../utils/validationUtil';
 
@@ -11,19 +12,21 @@ import { Timer } from './TImer';
 interface ErrorState {
     name?:string,
     phoneNumber?:string,
-    juminNumber?:string,
+    regNumber?:string,
 }
-
 
 export const AuthenForm:React.FC = () => {
     const nameRef = useRef<HTMLInputElement>(null);
     const phoneNumberRef = useRef<HTMLInputElement>(null);
-    const juminNumber1Ref = useRef<HTMLInputElement>(null);
-    const juminNumber2Ref = useRef<HTMLInputElement>(null);
+    const regNumber1Ref = useRef<HTMLInputElement>(null);
+    const regNumber2Ref = useRef<HTMLInputElement>(null);
+
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const [name, setName] = useState<string>();
-    const [phoneNumber, setPhoneNumber] = useState<number>();
-    const [juminNumber, setJuminNumber] = useState<number>();
+    const [phoneNumber, setPhoneNumber] = useState<string>();
+    const [regNumber, setRegNumber] = useState<string>();
 
     const [errorState, setErrorState] = useState<ErrorState>({});
     const [isValidated, setIsValidated] = useState<boolean>(false);
@@ -58,7 +61,7 @@ export const AuthenForm:React.FC = () => {
             setPhoneNumber(undefined);
             setErrorState(prevState=>{return({...prevState, phoneNumber:'올바른 전화번호를 입력해주세요'})});
         } else {
-            setPhoneNumber(Number(inputValue));
+            setPhoneNumber(inputValue);
             setErrorState(prevState=>{return({...prevState, phoneNumber:''})})
         }
     }
@@ -66,74 +69,70 @@ export const AuthenForm:React.FC = () => {
     const onKeyDownInputPhoneNumber = (e:React.KeyboardEvent<HTMLInputElement>) => {
         const { keyCode } = e;
         if ( keyCode === 13 ) {
-            juminNumber1Ref.current?.focus();
+            regNumber1Ref.current?.focus();
         }
     }
 
-    const onChangeInputJuminNumber = (e:React.ChangeEvent<HTMLInputElement>) => {
-        const inputValueJumin1 = juminNumber1Ref.current?.value;
-        const inputValueJumin2 = juminNumber2Ref.current?.value;
+    const onChangeInputRegNumber = (e:React.ChangeEvent<HTMLInputElement>) => {
+        const inputValueJumin1 = regNumber1Ref.current?.value;
+        const inputValueJumin2 = regNumber2Ref.current?.value;
 
         const jumin = (inputValueJumin1||'') + (inputValueJumin2||'');
 
         if (!validateFullRegNo(jumin || '')) {
-            setJuminNumber(undefined);
-            setErrorState(prevState=>{return({...prevState, juminNumber:'올바른 주민등록번호를 입력해주세요'})});
+            setRegNumber(undefined);
+            setErrorState(prevState=>{return({...prevState, regNumber:'올바른 주민등록번호를 입력해주세요'})});
         } else {
-            setJuminNumber(Number(jumin));
-            setErrorState(prevState=>{return({...prevState, juminNumber:''})})
+            setRegNumber(jumin);
+            setErrorState(prevState=>{return({...prevState, regNumber:''})})
         }
     }
 
-    const onKeyDownInputJuminNumber1 = (e:React.KeyboardEvent<HTMLInputElement>) => {
+    const onKeyDownInputRegNumber1 = (e:React.KeyboardEvent<HTMLInputElement>) => {
         const { keyCode } = e;
         if ( keyCode === 13 ) {
-            juminNumber2Ref.current?.focus();
+            regNumber2Ref.current?.focus();
         }
     }
 
-    const onSubmitHandler = async () => {
-        console.log(name, phoneNumber, juminNumber)
-
-        try {
-            const response = await fetch('http://localhost:3001/api/v1/easysign/request',
-            {
-                method:'POST'
-            });
-            const document:EasySignRequest = await response.json();
-            const {data} = document;
-            const {startedAt, expiredAt} = data;
-            
-            const subTime = moment.duration(moment(expiredAt).diff(startedAt));
-
-            setMinutes(subTime.minutes());
-            setSeconds(subTime.seconds());
-        } catch (e:any) {
-            console.error(e.message);
-        }
+    const onSubmitHandler = () => {
+        navigate('/auth/timer',{ replace: true, state:{name, phoneNumber, regNumber}})
+        // return (<Link to={'/auth/timer'} state={{name, phoneNumber, regNumber}}/>)
     }
 
     const onClickBtnNext = () => {
         setIsTermsModalVisible(true);
     }
 
+    const setInitialize = () => {
+        // const prevState:any = location.state;
+        // setName(prevState.name);
+        // setPhoneNumber(prevState.phoneNumber);
+        // setRegNumber(prevState.regNumber.substring(0,6));
+
+    }
+
     useEffect(()=>{
         if (nameRef.current) {
             nameRef.current.focus();
         }
+
+        if (location.state) {
+            setInitialize();
+        }
     },[]);
 
     useEffect(()=>{
-        if (name && phoneNumber && juminNumber) {
+        if (name && phoneNumber && regNumber) {
             setIsValidated(true)
         } else {
             setIsValidated(false)
         }
-    },[name, phoneNumber, juminNumber])
+    },[name, phoneNumber, regNumber])
 
     return (
         <div>
-            {/* <div className='form-title'>
+            <div className='form-title'>
                 정확한 환급액 조회를 위해 <br/>
                 아래 정보가 필요해요!
             </div>
@@ -150,7 +149,7 @@ export const AuthenForm:React.FC = () => {
                     <p>이름</p>
                     <input type='text' name='name' className={`input-bottom-underline ${errorState.name && 'error'}`}
                         maxLength={50}
-                        ref={nameRef} 
+                        ref={nameRef}
                         onChange={onChangeInputName}
                         onKeyDown={onKeyDownInputName}
                     />
@@ -181,20 +180,20 @@ export const AuthenForm:React.FC = () => {
                 <div className='form-item'>
                     <p>주민등록번호</p>
                     <div style={{display:'flex'}}>
-                        <input type='text' name='jumin1' className={`input-bottom-underline input-half ${errorState.juminNumber && 'error'}`}
-                            ref={juminNumber1Ref}
-                            onChange={onChangeInputJuminNumber}
-                            onKeyDown={onKeyDownInputJuminNumber1}
+                        <input type='text' name='jumin1' className={`input-bottom-underline input-half ${errorState.regNumber && 'error'}`}
+                            ref={regNumber1Ref}
+                            onChange={onChangeInputRegNumber}
+                            onKeyDown={onKeyDownInputRegNumber1}
                         /> 
                         <span style={{margin:'0px 15px'}}> - </span> 
-                        <input type='password' name='jumin2' className={`input-bottom-underline input-half ${errorState.juminNumber && 'error'}`}
-                            ref={juminNumber2Ref}
-                            onChange={onChangeInputJuminNumber}
+                        <input type='password' name='jumin2' className={`input-bottom-underline input-half ${errorState.regNumber && 'error'}`}
+                            ref={regNumber2Ref}
+                            onChange={onChangeInputRegNumber}
                         />
                     </div>
                     {
-                        errorState.juminNumber && (
-                            <span className='form-error'>{errorState.juminNumber}</span>
+                        errorState.regNumber && (
+                            <span className='form-error'>{errorState.regNumber}</span>
                         )
                     }
                 </div>
@@ -203,7 +202,7 @@ export const AuthenForm:React.FC = () => {
                     disabled={!isValidated}
                     onClick={onClickBtnNext}
                 >다음</button>
-            </div> */}
+            </div>
 
             {
                 isTermsModalVisible && (
@@ -211,12 +210,12 @@ export const AuthenForm:React.FC = () => {
                 )
             }
             {/* {
-                <Timer mm={minutes} ss={seconds}/>
+                <Timer/>
             } */}
 
-            {
+            {/* {
                 <CompletedForm/>
-            }
+            } */}
         </div>
     )
 }

@@ -3,6 +3,9 @@
     font-weight: 700;
     margin: 20px
 }
+.timer.timer-end {
+    color: red;
+}
 
 .hr-line {
     height: 12px;
@@ -33,3 +36,4 @@
 .timer-info-description{
     color: #878D96;
 }
+

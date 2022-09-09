@@ -26,6 +26,10 @@ export interface IncomeRequest {
 
  export interface EasySignRequest {
     ok: boolean,
+    error: {
+        code: number,
+        message: string,
+    },
     data: {
         expiredAt:string,
         startedAt:string,
