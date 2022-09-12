@@ -1,10 +1,13 @@
 import React, {useEffect, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 import { IncomeRequest, officeRequest } from '../utils/request.module';
 
 import './CompletedForm.css';
 
 export const CompletedForm:React.FC = () => {
+    const location = useLocation();
 
+    const {state}:any = location;
     const [officeName, setOfficeName] = useState<string>();
     const [officePhone, setOfficePhone] = useState<string>();
     const [prepaidAmount, setPrepaidAmount] = useState<number>();
@@ -51,7 +54,7 @@ export const CompletedForm:React.FC = () => {
     return (
         <div> 
             <div className='completed-form-upper'>
-                <img alt='completed' src='./completed.png'/>
+                <img alt='completed' src='/completed.png'/>
                 <div className="completed-title">인증 완료</div>
                 <div>본인인증이 완료되었습니다.</div>
             </div>
@@ -59,15 +62,15 @@ export const CompletedForm:React.FC = () => {
                 <div className='completed-form-title'>기본 정보</div>
                 <div className='completed-form-item'>
                     <div>이름</div>
-                    <div></div>
+                    <div>{state?.name}</div>
                 </div>
                 <div className='completed-form-item'>
                     <div>휴대폰 번호</div>
-                    <div></div>
+                    <div>{state?.phoneNumber}</div>
                 </div>
                 <div className='completed-form-item'>
                     <div>주민등록번호</div>
-                    <div></div>
+                    <div>{`${state?.regNumber.substring(0,6)} - ${state?.regNumber.substring(6,7)}******`}</div>
                 </div>
             </div>
             <div className="completed-container detail-info">

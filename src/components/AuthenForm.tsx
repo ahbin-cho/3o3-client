@@ -1,13 +1,9 @@
-import moment from 'moment';
 import React,{useState, useRef,useEffect} from 'react';
-import {useNavigate, useLocation} from 'react-router-dom';
-import { EasySignRequest } from '../utils/request.module';
+import {useNavigate} from 'react-router-dom';
 import { validateFullRegNo, validateName, validatePhoneNumber } from '../utils/validationUtil';
 
 import './AuthenForm.css';
-import { CompletedForm } from './CompletedForm';
 import { TermsModal } from './TermsModal';
-import { Timer } from './TImer';
 
 interface ErrorState {
     name?:string,
@@ -22,7 +18,6 @@ export const AuthenForm:React.FC = () => {
     const regNumber2Ref = useRef<HTMLInputElement>(null);
 
     const navigate = useNavigate();
-    const location = useLocation();
 
     const [name, setName] = useState<string>();
     const [phoneNumber, setPhoneNumber] = useState<string>();
@@ -31,9 +26,6 @@ export const AuthenForm:React.FC = () => {
     const [errorState, setErrorState] = useState<ErrorState>({});
     const [isValidated, setIsValidated] = useState<boolean>(false);
     const [isTermsModalVisible, setIsTermsModalVisible] = useState<boolean>(false);
-
-    const [minutes, setMinutes] = useState<number>(1);
-    const [seconds, setSeconds] = useState<number>(0);
 
     const onChangeInputName = (e:React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = nameRef.current?.value;
@@ -104,22 +96,11 @@ export const AuthenForm:React.FC = () => {
         setIsTermsModalVisible(true);
     }
 
-    const setInitialize = () => {
-        // const prevState:any = location.state;
-        // setName(prevState.name);
-        // setPhoneNumber(prevState.phoneNumber);
-        // setRegNumber(prevState.regNumber.substring(0,6));
-
-    }
-
     useEffect(()=>{
         if (nameRef.current) {
             nameRef.current.focus();
         }
 
-        if (location.state) {
-            setInitialize();
-        }
     },[]);
 
     useEffect(()=>{
@@ -209,13 +190,6 @@ export const AuthenForm:React.FC = () => {
                     <TermsModal onSubmit={onSubmitHandler} onClose={()=>setIsTermsModalVisible(false)}/>
                 )
             }
-            {/* {
-                <Timer/>
-            } */}
-
-            {/* {
-                <CompletedForm/>
-            } */}
         </div>
     )
 }

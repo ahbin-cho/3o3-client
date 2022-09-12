@@ -24,11 +24,9 @@ export const Timer:React.FC = () => {
             
             const subTime = moment.duration(moment(expiredAt).diff(startedAt));
 
-            // setMinutes(subTime.minutes());
-            // setSeconds(subTime.seconds());
-
-            setMinutes(1);
+            setMinutes(subTime.minutes());
             setSeconds(subTime.seconds());
+
         } catch (e:any) {
             console.error(e.message);
         }
@@ -71,7 +69,7 @@ export const Timer:React.FC = () => {
             const document:EasySignRequest = await response.json();
 
             if (document.ok) {
-
+                navigate('/auth/complete',{replace:true, state:location.state});
             } else {
                 const {message} = document.error;
                 errorMessageAlert(message,'');
