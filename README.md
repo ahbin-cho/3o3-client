@@ -26,17 +26,19 @@ Create-react-app으로 기본 프로젝트 구성
 └── package.json
 ```
 
-총 3페이지 구성으로 
+총 3페이지 구성
 1. 인증정보 입력 폼 AuthenForm
 유효성 검사는 server/src/utils/validationUtil 를 이용함
 2. 타이머 Timer
 3. 인증 완료 CompletedForm
 
 통신은 내장된 모듈인 fetch를 통해서 진행.
+response type(interface)을 utils/request.module.ts 로 분리.
 
 UI framework는 사용하지 않음
 
-### 로컬 환경 프로젝트 실행 방법
-
+### 프로젝트 실행 방법
+1.
 `npm ci`
+2.
 `npm start` 
